@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY!);
 
 
-export async function generateResponseUsingGemini(contextText: string, queryText: string, candidateData) {
+export async function generateResponseUsingGemini(contextText: string, queryText: string, candidateData: { extracted_text: string }) {
     // const model = genAI.getGenerativeModel({ model: "text-davinci-003" });
 
 

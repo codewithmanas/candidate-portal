@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 // const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || "");
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY!);
 
-export const generateEmbeddingUsingGemini = async (textArray) => {
+export const generateEmbeddingUsingGemini = async (textArray: string[]) => {
 
 
 

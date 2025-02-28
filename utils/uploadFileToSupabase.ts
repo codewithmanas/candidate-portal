@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { v4 as uuidv4} from "uuid";
 
-export async function uploadFileToSupabase(file) {
+export async function uploadFileToSupabase(file: File) {
 try {
 
     // Define file path in Supabase Storage

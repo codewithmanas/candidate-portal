@@ -15,38 +15,56 @@ import LoadingEvaluation from './LoadingEvaluation';
 //   };
 // }
 
-export default function CandidateEvaluation({ id }) {
+export default function CandidateEvaluation({ id } : { id: string }) {
   const [activeTab, setActiveTab] = useState('summary');
-  const [studentData, setStudentData] = useState(null);
+  const [studentData, setStudentData] = useState<null | {
+    scores: {
+      overall: number;
+      technical: number;
+      experience: number;
+      communication: number;
+      jobFit: number;
+    };
+    extractSections: {
+      summary: string;
+      skillAssessment: string;
+      experienceEvaluation: string;
+      recommendations: string;
+    };
+  }>(null);
+
+  console.log(activeTab);
   
   // Parse the analysis text to extract different sections
   // const analysisText = null;
   // const analysisText = data.analysis || '';
-  const analysisText = '';
+  // const analysisText = '';
 
-  const getStudentDataById = async () => {
-    const response = await fetch(`/api/query/${id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        "queryText": "give me the response"
-        }),
-    });
 
-    const data = await response.json();
-
-    // console.log("data: ", JSON.parse(data.data.response));
-    // console.log("data: ", JSON.parse(data.data.response.replace(/^```json\s*|\s*```$/g, '')));
-    const actualData = JSON.parse(data.data.response.replace(/^```json\s*|\s*```$/g, ''));
-
-    setStudentData(actualData);
-  }
 
   useEffect(() => {
+    const getStudentDataById = async () => {
+      const response = await fetch(`/api/query/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          "queryText": "give me the response"
+          }),
+      });
+  
+      const data = await response.json();
+  
+      // console.log("data: ", JSON.parse(data.data.response));
+      // console.log("data: ", JSON.parse(data.data.response.replace(/^```json\s*|\s*```$/g, '')));
+      const actualData = JSON.parse(data.data.response.replace(/^```json\s*|\s*```$/g, ''));
+  
+      setStudentData(actualData);
+    }
+
     getStudentDataById();
-  }, []);
+  }, [id]);
 
   // console.log("studentData: ", studentData);
 
@@ -59,38 +77,38 @@ export default function CandidateEvaluation({ id }) {
   }
   
   // Extract sections from the analysis text
-  const extractSection = (text: string, sectionTitle: string): string => {
-    const regex = new RegExp(`${sectionTitle}[:\\s]*(.*?)(?=\\d+\\.|$)`, 's');
-    const match = text.match(regex);
-    return match ? match[1].trim() : '';
-  };
+  // const extractSection = (text: string, sectionTitle: string): string => {
+  //   const regex = new RegExp(`${sectionTitle}[:\\s]*(.*?)(?=\\d+\\.|$)`, 's');
+  //   const match = text.match(regex);
+  //   return match ? match[1].trim() : '';
+  // };
 
   // Generate scores based on the analysis
-  const generateScores = () => {
-    // This would normally be calculated by the AI, but we're simulating it here
-    return {
-      overall: Math.floor(Math.random() * 30) + 70, // 70-99
-      technical: Math.floor(Math.random() * 30) + 70,
-      experience: Math.floor(Math.random() * 30) + 70,
-      communication: Math.floor(Math.random() * 30) + 70,
-      jobFit: Math.floor(Math.random() * 30) + 70,
-    };
-  };
+  // const generateScores = () => {
+  //   // This would normally be calculated by the AI, but we're simulating it here
+  //   return {
+  //     overall: Math.floor(Math.random() * 30) + 70, // 70-99
+  //     technical: Math.floor(Math.random() * 30) + 70,
+  //     experience: Math.floor(Math.random() * 30) + 70,
+  //     communication: Math.floor(Math.random() * 30) + 70,
+  //     jobFit: Math.floor(Math.random() * 30) + 70,
+  //   };
+  // };
 
-  const scores = generateScores();
+  // const scores = generateScores();
   
   // Extract sections
-  const summary = extractSection(analysisText, '1\\. A summary of their key qualifications') || 
-    "The candidate has a strong background in software development with experience in multiple programming languages and frameworks. They have demonstrated skills in problem-solving and team collaboration.";
+  // const summary = extractSection(analysisText, '1\\. A summary of their key qualifications') || 
+  //   "The candidate has a strong background in software development with experience in multiple programming languages and frameworks. They have demonstrated skills in problem-solving and team collaboration.";
   
-  const skillAssessment = extractSection(analysisText, '2\\. Skill assessment') || 
-    "The candidate possesses strong technical skills in JavaScript, React, and Node.js. They have experience with database technologies and cloud platforms. Their problem-solving abilities and attention to detail are notable strengths.";
+  // const skillAssessment = extractSection(analysisText, '2\\. Skill assessment') || 
+  //   "The candidate possesses strong technical skills in JavaScript, React, and Node.js. They have experience with database technologies and cloud platforms. Their problem-solving abilities and attention to detail are notable strengths.";
   
-  const experienceEvaluation = extractSection(analysisText, '3\\. Experience evaluation') || 
-    "The candidate has relevant industry experience working on similar projects. They have demonstrated the ability to work in team environments and deliver results. Their experience aligns well with the requirements of the position.";
+  // const experienceEvaluation = extractSection(analysisText, '3\\. Experience evaluation') || 
+  //   "The candidate has relevant industry experience working on similar projects. They have demonstrated the ability to work in team environments and deliver results. Their experience aligns well with the requirements of the position.";
   
-  const recommendations = extractSection(analysisText, '4\\. Recommendations for improvement') || 
-    "The candidate could benefit from expanding their knowledge in cloud technologies and microservices architecture. Additional certifications in relevant technologies would strengthen their profile. Developing more experience with agile methodologies would also be beneficial.";
+  // const recommendations = extractSection(analysisText, '4\\. Recommendations for improvement') || 
+  //   "The candidate could benefit from expanding their knowledge in cloud technologies and microservices architecture. Additional certifications in relevant technologies would strengthen their profile. Developing more experience with agile methodologies would also be beneficial.";
 
   // Format score label
   const getScoreLabel = (score: number) => {

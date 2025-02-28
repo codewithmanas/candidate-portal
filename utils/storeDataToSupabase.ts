@@ -1,6 +1,16 @@
 import { supabase } from "@/lib/supabase";
 
-export async function storeDataToSupabase(formData) {
+interface formDataProps  {
+    name: string,
+    email: string,
+    linkedin_url: string,
+    resume_url: string,
+    skill: string,
+    experience: string,
+    extracted_text: string
+  }
+
+export async function storeDataToSupabase(formData: formDataProps ) {
 try {
         const { data, error } = await supabase
         .from('resume_details')

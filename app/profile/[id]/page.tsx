@@ -3,7 +3,7 @@ import CandidateEvaluation from '@/components/CandidateEvaluation';
 // import { getStudentDataById } from '@/utils/getStudentDataById';
 import React from 'react'
 
-const CandidatePage = async ({params}: { params: Promise<{params: string}>}) => {
+const CandidatePage = async ({params}: { params: Promise<{id: string}>}) => {
 
     const { id } = await params;
 

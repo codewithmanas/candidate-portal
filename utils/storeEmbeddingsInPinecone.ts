@@ -1,7 +1,7 @@
 import { pineconeClient } from "@/lib/pinecone";
 
 
-async function namespaceExists(index, namespace) {
+async function namespaceExists(index, namespace: string) {
     if (namespace === null) throw new Error("No Namespace value provided.");
   
     const { namespaces } = await index.describeIndexStats();

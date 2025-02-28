@@ -51,11 +51,11 @@ export async function POST(
 
         const result = await queryPineconeStore(queryText, websiteId);
 
-        if (result.matches.length === 0) {
+        if (result?.matches.length === 0) {
             return NextResponse.json({ error: "No data found" });
           }
         
-          const contextText = result.matches
+          const contextText = result?.matches
             .map((match) => match.metadata?.text)
             .filter(Boolean)
             .join("\n");
@@ -63,7 +63,7 @@ export async function POST(
         
         // console.log("contextText: ", contextText);
 
-        const response = await generateResponseUsingGemini(contextText, queryText, candidateData);
+        const response = await generateResponseUsingGemini(contextText!, queryText, candidateData);
 
         if (!response) {
           return NextResponse.json({ error: "Error generating response" }); 
