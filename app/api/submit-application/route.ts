@@ -85,35 +85,6 @@ export async function POST(req: NextRequest) {
     }
 
 
-
-    // // Combine all text for analysis
-    // const candidateProfile = `
-    //   Name: ${data.name}
-    //   Skills: ${data.skills}
-    //   Experience: ${data.experience}
-    //   Resume Text: ${resumeText}
-    // `;
-
-    // // Generate embeddings and store in Pinecone
-    // const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
-    // // Generate AI analysis
-    // const prompt = `
-    //   Analyze the following candidate profile and provide:
-    //   1. A summary of their key qualifications
-    //   2. Skill assessment
-    //   3. Experience evaluation
-    //   4. Recommendations for improvement
-
-    //   Profile:
-    //   ${candidateProfile}
-    // `;
-
-    // const result = await model.generateContent(prompt);
-    // const analysis = result.response.text();
-
-    // return NextResponse.json({ succuss: true, message: "Application received", data: result });
-
     return NextResponse.json({
       success: true,
       message: "Application received",

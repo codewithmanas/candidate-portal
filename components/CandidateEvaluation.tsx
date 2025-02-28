@@ -1,24 +1,62 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Award, CheckCircle2, FileText, Lightbulb, Star } from 'lucide-react';
+import LoadingEvaluation from './LoadingEvaluation';
 
-interface CandidateEvaluationProps {
-  data: {
-    analysis: string;
-    success: boolean;
-  };
-}
+// interface CandidateEvaluationProps {
+//   data: {
+//     analysis: string;
+//     success: boolean;
+//   };
+// }
 
-export default function CandidateEvaluation({ data }: CandidateEvaluationProps) {
+export default function CandidateEvaluation({ id }) {
   const [activeTab, setActiveTab] = useState('summary');
+  const [studentData, setStudentData] = useState(null);
   
   // Parse the analysis text to extract different sections
-  const analysisText = data.analysis || '';
+  // const analysisText = null;
+  // const analysisText = data.analysis || '';
+  const analysisText = '';
+
+  const getStudentDataById = async () => {
+    const response = await fetch(`/api/query/${id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "queryText": "give me the response"
+        }),
+    });
+
+    const data = await response.json();
+
+    // console.log("data: ", JSON.parse(data.data.response));
+    // console.log("data: ", JSON.parse(data.data.response.replace(/^```json\s*|\s*```$/g, '')));
+    const actualData = JSON.parse(data.data.response.replace(/^```json\s*|\s*```$/g, ''));
+
+    setStudentData(actualData);
+  }
+
+  useEffect(() => {
+    getStudentDataById();
+  }, []);
+
+  // console.log("studentData: ", studentData);
+
+  if(!studentData) {
+    return (
+      <>
+        <LoadingEvaluation />
+      </>
+    )
+  }
   
   // Extract sections from the analysis text
   const extractSection = (text: string, sectionTitle: string): string => {
@@ -72,6 +110,15 @@ export default function CandidateEvaluation({ data }: CandidateEvaluationProps) 
     return 'text-red-600 dark:text-red-400';
   };
 
+  if(!studentData) {
+    return (
+      <>
+        <LoadingEvaluation />
+      </>
+    )
+  }
+
+
   return (
     <div className="space-y-6 min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div className="flex items-center justify-between container mx-auto px-4 py-6 sm:py-12">
@@ -105,11 +152,11 @@ export default function CandidateEvaluation({ data }: CandidateEvaluationProps) 
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
             <div className="relative h-24 w-24 sm:h-32 sm:w-32 flex-shrink-0 mx-auto sm:mx-0">
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className={`text-2xl sm:text-3xl font-bold ${getScoreColorClass(scores.overall)}`}>
-                  {scores.overall}%
+                <span className={`text-2xl sm:text-3xl font-bold ${getScoreColorClass(studentData.scores.overall)}`}>
+                  {studentData.scores.overall}%
                 </span>
               </div>
-              <svg className="h-full w-full" viewBox="0 0 100 100">
+              {/* <svg className="h-full w-full" viewBox="0 0 100 100">
                 <circle
                   cx="50"
                   cy="50"
@@ -127,44 +174,44 @@ export default function CandidateEvaluation({ data }: CandidateEvaluationProps) 
                   strokeWidth="10"
                   strokeDasharray={`${2 * Math.PI * 45 * scores.overall / 100} ${2 * Math.PI * 45 * (1 - scores.overall / 100)}`}
                   strokeDashoffset={2 * Math.PI * 45 * 0.25}
-                  className={getScoreColorClass(scores.overall)}
+                  className={getScoreColorClass(studentData.scores.overall)}
                 />
-              </svg>
+              </svg> */}
             </div>
             <div className="flex-1 space-y-3 text-center sm:text-left">
               <div>
                 <span className="text-sm text-gray-500 dark:text-gray-400">Rating</span>
-                <h4 className={`text-lg sm:text-xl font-semibold ${getScoreColorClass(scores.overall)}`}>
-                  {getScoreLabel(scores.overall)}
+                <h4 className={`text-lg sm:text-xl font-semibold ${getScoreColorClass(studentData.scores.overall)}`}>
+                  {getScoreLabel(studentData.scores.overall)}
                 </h4>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <span className="text-xs text-gray-500 dark:text-gray-400">Technical</span>
                   <div className="flex items-center gap-1">
-                    <Progress value={scores.technical} className="h-2" />
-                    <span className="text-xs font-medium">{scores.technical}%</span>
+                    <Progress value={studentData.scores.technical} className="h-2" />
+                    <span className="text-xs font-medium">{studentData.scores.technical}%</span>
                   </div>
                 </div>
                 <div>
                   <span className="text-xs text-gray-500 dark:text-gray-400">Experience</span>
                   <div className="flex items-center gap-1">
-                    <Progress value={scores.experience} className="h-2" />
-                    <span className="text-xs font-medium">{scores.experience}%</span>
+                    <Progress value={studentData.scores.experience} className="h-2" />
+                    <span className="text-xs font-medium">{studentData.scores.experience}%</span>
                   </div>
                 </div>
                 <div>
                   <span className="text-xs text-gray-500 dark:text-gray-400">Communication</span>
                   <div className="flex items-center gap-1">
-                    <Progress value={scores.communication} className="h-2" />
-                    <span className="text-xs font-medium">{scores.communication}%</span>
+                    <Progress value={studentData.scores.communication} className="h-2" />
+                    <span className="text-xs font-medium">{studentData.scores.communication}%</span>
                   </div>
                 </div>
                 <div>
                   <span className="text-xs text-gray-500 dark:text-gray-400">Job Fit</span>
                   <div className="flex items-center gap-1">
-                    <Progress value={scores.jobFit} className="h-2" />
-                    <span className="text-xs font-medium">{scores.jobFit}%</span>
+                    <Progress value={studentData.scores.jobFit} className="h-2" />
+                    <span className="text-xs font-medium">{studentData.scores.jobFit}%</span>
                   </div>
                 </div>
               </div>
@@ -194,7 +241,7 @@ export default function CandidateEvaluation({ data }: CandidateEvaluationProps) 
               <div>
                 <h3 className="font-semibold text-base sm:text-lg mb-2">Profile Summary</h3>
                 <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 whitespace-pre-line">
-                  {summary}
+                  {studentData.extractSections.summary}
                 </p>
               </div>
             </div>
@@ -206,7 +253,7 @@ export default function CandidateEvaluation({ data }: CandidateEvaluationProps) 
               <div>
                 <h3 className="font-semibold text-base sm:text-lg mb-2">Skill Assessment</h3>
                 <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 whitespace-pre-line">
-                  {skillAssessment}
+                  {studentData.extractSections.skillAssessment}
                 </p>
               </div>
             </div>
@@ -218,7 +265,7 @@ export default function CandidateEvaluation({ data }: CandidateEvaluationProps) 
               <div>
                 <h3 className="font-semibold text-base sm:text-lg mb-2">Experience Evaluation</h3>
                 <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 whitespace-pre-line">
-                  {experienceEvaluation}
+                  {studentData.extractSections.experienceEvaluation}
                 </p>
               </div>
             </div>
@@ -230,7 +277,7 @@ export default function CandidateEvaluation({ data }: CandidateEvaluationProps) 
               <div>
                 <h3 className="font-semibold text-base sm:text-lg mb-2">Recommendations</h3>
                 <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 whitespace-pre-line">
-                  {recommendations}
+                  {studentData.extractSections.recommendations}
                 </p>
               </div>
             </div>
