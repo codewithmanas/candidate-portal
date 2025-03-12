@@ -12,6 +12,10 @@ export async function queryPineconeStore(queryText: string, websiteId: string) {
 
     try {
       const queryEmbedding = await generateEmbeddingUsingGemini([queryText]);
+
+      if(!queryEmbedding) {
+        throw new Error("Error query Embedding using gemini");
+      }
   
       const response = await pineconeIndex.namespace(websiteId).query({
         vector: queryEmbedding[0].values,

@@ -1,8 +1,8 @@
-import { cleanDataIntoNormalText } from "@/utils/cleanDataIntoNormalText";
-import { generateEmbeddingUsingGemini } from "@/utils/generateEmbeddingUsingGemini";
-import { splitDataIntoChunks } from "@/utils/splitDataIntoChunks";
+// import { cleanDataIntoNormalText } from "@/utils/cleanDataIntoNormalText";
+// import { generateEmbeddingUsingGemini } from "@/utils/generateEmbeddingUsingGemini";
+// import { splitDataIntoChunks } from "@/utils/splitDataIntoChunks";
 import { storeDataToSupabase } from "@/utils/storeDataToSupabase";
-import { storeEmbeddingsInPinecone } from "@/utils/storeEmbeddingsInPinecone";
+// import { storeEmbeddingsInPinecone } from "@/utils/storeEmbeddingsInPinecone";
 import { uploadFileToSupabase } from "@/utils/uploadFileToSupabase";
 import { NextRequest, NextResponse } from "next/server";
 import pdfParse from "pdf-parse";
@@ -68,21 +68,21 @@ export async function POST(req: NextRequest) {
     }
 
     // Clean Data
-    const cleanData = cleanDataIntoNormalText(parsedData.text);
+    // const cleanData = cleanDataIntoNormalText(parsedData.text);
 
     // Split Data into chunks
-    const chunks = await splitDataIntoChunks(cleanData, 100, 30);
+    // const chunks = await splitDataIntoChunks(cleanData, 100, 30);
 
     // Generate Embeddings
-    const embeddings =  await generateEmbeddingUsingGemini(chunks);
+    // const embeddings =  await generateEmbeddingUsingGemini(chunks);
 
 
     // Store to Pinecone Vector Store
-    const vectorstoresuccess = await storeEmbeddingsInPinecone(embeddings, result[0].id)
+    // const vectorstoresuccess = await storeEmbeddingsInPinecone(embeddings, result[0].id)
 
-    if (!vectorstoresuccess) {
-      throw new Error("Error storing embeddings in Pinecone");
-    }
+    // if (!vectorstoresuccess) {
+    //   throw new Error("Error storing embeddings in Pinecone");
+    // }
 
 
     return NextResponse.json({
