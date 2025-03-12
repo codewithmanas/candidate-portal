@@ -16,10 +16,23 @@ export const splitDataIntoChunks = async (data: string, chunkSize: number, chunk
       chunkSize: chunkSize,
       chunkOverlap: chunkOverlap,
     });
+
+    const queryText = `
+    Analyze the candidate profile and provide:
+1. Candidate overall score (0-100)
+2. Technical score (0-100)
+3. Experience score (0-100)
+4. Communication score (0-100)
+5. JobFit score (0-100)
+6. Summary
+7. Skill Assessment
+8. Experience Evaluation
+9. Recommendations
+`
   
     // const output = await splitter.createDocuments([data]);
     // const output = await splitter.splitDocuments(data);
-    const output = await splitter.splitText(data);
+    const output = await splitter.splitText(data + queryText);
   
     return output;
   };

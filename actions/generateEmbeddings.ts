@@ -59,9 +59,10 @@ try {
                         
                             if (pineconeResult?.matches.length === 0) {
                               console.log("No data found on pinecone query");
+                              // throw new Error("No data found on pinecone query");
                             }
                         
-                            const contextText = pineconeResult?.matches
+                            const contextText = pineconeResult?.matches.length === 0 ? "" : pineconeResult?.matches
                               .map((match) => match.metadata?.text)
                               .filter(Boolean)
                               .join("\n");
