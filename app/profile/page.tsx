@@ -1,6 +1,6 @@
 
 // import CandidateEvaluation from '@/components/CandidateEvaluation'
-import LoadingEvaluation from '@/components/LoadingEvaluation'
+// import LoadingEvaluation from '@/components/LoadingEvaluation'
 import React from 'react'
 
 const ProfilePage = () => {
@@ -13,7 +13,8 @@ const ProfilePage = () => {
   return (
     <div>
         {/* <CandidateEvaluation data={data} /> */}
-                <LoadingEvaluation />
+                {/* <LoadingEvaluation /> */}
+                <h1>Loading Evaluation...</h1>
     </div>
   )
 }

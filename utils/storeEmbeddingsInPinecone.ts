@@ -1,15 +1,24 @@
 import { pineconeClient } from "@/lib/pinecone";
+import { Index, RecordMetadata } from "@pinecone-database/pinecone";
 
 
-async function namespaceExists(index, namespace: string) {
+interface VectorType {
+  id: string;
+  values: number[];
+  metadata: {
+      text: string;
+  };
+}
+
+async function namespaceExists(index: Index<RecordMetadata>, namespace: string) {
     if (namespace === null) throw new Error("No Namespace value provided.");
   
     const { namespaces } = await index.describeIndexStats();
     return namespaces?.[namespace] !== undefined;
   }
 
-const storeEmbeddingsInPinecone = async (vectors,
-    websiteId,
+const storeEmbeddingsInPinecone = async (vectors: VectorType[],
+    websiteId: string,
     indexName = "candidate-portal",
     host = "https://candidate-portal-lptt09o.svc.aped-4627-b74a.pinecone.io") => {
     const index = pineconeClient.Index(indexName, host);

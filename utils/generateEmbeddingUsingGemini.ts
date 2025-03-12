@@ -1,18 +1,19 @@
-
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || "");
+if(!process.env.GOOGLE_GEMINI_API_KEY) {
+    throw new Error("GOOGLE_GEMINI_API_KEY is not set");
+}
+
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY!);
 
-export const generateEmbeddingUsingGemini = async (textArray: string[]) => {
+export const generateEmbeddingUsingGemini = async (queryTextArray: string[]) => {
 
 
-
-        // Step 2: Generate embeddings for each chunk
+        // Generate embeddings for each chunk
         const model = genAI.getGenerativeModel({ model: "embedding-001" });
 
         const embeddings = await Promise.all(
-            textArray.map(async (chunk, index) => {
+            queryTextArray.map(async (chunk, index) => {
 
             const cleanedText =  chunk
             .replace(/\n+/g, " ") // Remove excessive newlines
@@ -24,6 +25,7 @@ export const generateEmbeddingUsingGemini = async (textArray: string[]) => {
                 content: { role: "user", parts: [{ text: cleanedText }] }, // Correct structure
               });
 
+            // console.log("Embedding response:", response);
 
             return {
               id: `chunks-${index}`, // Unique ID for each chunk

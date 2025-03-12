@@ -1,3 +1,5 @@
+"use server";
+
 import { supabase } from "@/lib/supabase";
 
 interface formDataProps  {
@@ -7,7 +9,7 @@ interface formDataProps  {
     resume_url: string,
     skill: string,
     experience: string,
-    extracted_text: string
+    // extracted_text: string
   }
 
 export async function storeDataToSupabase(formData: formDataProps ) {

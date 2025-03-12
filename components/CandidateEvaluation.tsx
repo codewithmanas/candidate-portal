@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Award, CheckCircle2, FileText, Lightbulb, Star } from 'lucide-react';
-import LoadingEvaluation from './LoadingEvaluation';
+// import LoadingEvaluation from './LoadingEvaluation';
 
 // interface CandidateEvaluationProps {
 //   data: {
@@ -55,10 +55,12 @@ export default function CandidateEvaluation({ id } : { id: string }) {
       });
   
       const data = await response.json();
+
+      console.log("data: ", data);
   
       // console.log("data: ", JSON.parse(data.data.response));
       // console.log("data: ", JSON.parse(data.data.response.replace(/^```json\s*|\s*```$/g, '')));
-      const actualData = JSON.parse(data.data.response.replace(/^```json\s*|\s*```$/g, ''));
+      const actualData = (data.response.replace(/^```json\s*|\s*```$/g, ''));
   
       setStudentData(actualData);
     }
@@ -71,7 +73,8 @@ export default function CandidateEvaluation({ id } : { id: string }) {
   if(!studentData) {
     return (
       <>
-        <LoadingEvaluation />
+        {/* <LoadingEvaluation /> */}
+        <div>Loading...</div>
       </>
     )
   }
@@ -131,7 +134,8 @@ export default function CandidateEvaluation({ id } : { id: string }) {
   if(!studentData) {
     return (
       <>
-        <LoadingEvaluation />
+        {/* <LoadingEvaluation /> */}
+        <div>Loading...</div>
       </>
     )
   }

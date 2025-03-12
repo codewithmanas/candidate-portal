@@ -1,8 +1,14 @@
 import { pineconeClient } from "@/lib/pinecone";
 import { generateEmbeddingUsingGemini } from "./generateEmbeddingUsingGemini";
 
+if(!process.env.PINECONE_INDEX_NAME) {
+    throw new Error("PINECONE_INDEX_NAME is not set");
+}
+
+const pineconeIndex = pineconeClient.Index(process.env.PINECONE_INDEX_NAME);
+
+
 export async function queryPineconeStore(queryText: string, websiteId: string) {
-    const pineconeIndex = pineconeClient.Index(process.env.PINECONE_INDEX_NAME!);
 
     try {
       const queryEmbedding = await generateEmbeddingUsingGemini([queryText]);

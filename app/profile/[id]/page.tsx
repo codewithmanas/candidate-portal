@@ -1,5 +1,5 @@
 
-import CandidateEvaluation from '@/components/CandidateEvaluation';
+// import CandidateEvaluation from '@/components/CandidateEvaluation';
 // import { getStudentDataById } from '@/utils/getStudentDataById';
 import React from 'react'
 
@@ -15,7 +15,8 @@ const CandidatePage = async ({params}: { params: Promise<{id: string}>}) => {
     
   return (
     <div>
-        <CandidateEvaluation id={id} />
+        {/* <CandidateEvaluation id={id} /> */}
+        <h1>Id: {id}</h1>
     </div>
   )
 }

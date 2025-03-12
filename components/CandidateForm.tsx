@@ -19,7 +19,29 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
+import { uploadFileToSupabase } from '@/utils/uploadFileToSupabase';
+// import PdfParse from 'pdf-parse';
+import { storeDataToSupabase } from '@/utils/storeDataToSupabase';
+// import { cleanDataIntoNormalText } from '@/utils/cleanDataIntoNormalText';
+import { generateEmbeddings } from '@/actions/generateEmbeddings';
+import LoadingEvaluation from './LoadingEvaluation';
+import ReactMarkdown from "react-markdown";
+// import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+// import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
+
+
+
+export enum StatusText {
+  UPLOADING = "Uploading file...",
+  UPLOADED = "File uploaded successfully",
+  SAVING = "Saving file to database...",
+  GENERATING = "Generating AI Embeddings, This will only take a few seconds...",
+}
+
+export type Status = StatusText[keyof StatusText];
+
 
 // Define the form schema
 const formSchema = z.object({
@@ -36,8 +58,10 @@ export default function CandidateForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [status, setStatus] = useState<Status | null>(null);
+  const [queryResult, setQueryResult] = useState("");
 
-  const router = useRouter();
+  // const router = useRouter();
 
   // Define your
   const form = useForm<z.infer<typeof formSchema>>({
@@ -89,43 +113,113 @@ export default function CandidateForm() {
 
       console.log("values", values);
 
-      if (resumeFile) {
-        console.log("resumeFile", resumeFile);
+      if(!resumeFile) {
+        throw new Error("upload resume and try again");
       }
 
-      const formData = new FormData();
-      formData.append('name', (values.name));
-      formData.append('email', (values.email));
-      formData.append('linkedinUrl', (values.linkedinUrl));
-      formData.append('skills', (values.skills));
-      formData.append('experience', (values.experience));
+      console.log("UPLOADING...");
+      setStatus(StatusText.UPLOADING);
 
-      if (resumeFile) {
-        formData.append('resume', resumeFile);
+      const uploadsuccess = await uploadFileToSupabase(resumeFile);
+
+      if(!uploadsuccess?.resumeUrl) {
+        throw new Error("Failed to upload resume file");
       }
 
-      const response = await fetch('/api/submit-application', {
-        method: 'POST',
-        body: formData,
-      });
+      console.log("UPLOADED...");
+      setStatus(StatusText.UPLOADED);
+      
+          
+          const formDataToStore = {
+            name: values.name,
+            email: values.email,
+            linkedin_url: values.linkedinUrl,
+            resume_url: uploadsuccess?.resumeUrl,
+            skill: values.skills,
+            experience: values.experience,
+            // extracted_text: parsedData.text
+          }
 
-      console.log("response", response);
+          console.log("SAVING...");
+          setStatus(StatusText.SAVING);
 
-      if (!response.ok) {
-        throw new Error('Failed to submit application');
-      }
+          const storeDataResult = await storeDataToSupabase(formDataToStore);
+          
+          if(!storeDataResult) {
+            throw new Error("Failed to store to database");
+          }
 
-      const data = await response.json();
+          console.log("GENERATING...");
+          setStatus(StatusText.GENERATING);
 
-      console.log("data: ", data);
+          const embeddingsResult = await generateEmbeddings(resumeFile, storeDataResult[0].id);
 
 
-      // Handle success
-      console.log('Application submitted successfully');
+          if(embeddingsResult) {
+                // Step 2: Redirect Immediately
+              // Show Processing Screen
+              // router.push(`/profile/${storeDataResult[0].id}`);
 
-      // Step 2: Redirect Immediately
-      // Show Processing Screen
-      router.push(`/profile/${data.data.id}`); 
+              console.log("embeddingsResult: ", embeddingsResult);
+
+              // setQueryResult(embeddingsResult);
+              
+              const parsedData = JSON.stringify(embeddingsResult);
+              
+              console.log("parsedData: ", parsedData);
+              setQueryResult(embeddingsResult);
+
+          }
+
+
+
+
+
+
+
+
+
+
+
+
+
+      // const formData = new FormData();
+      // formData.append('name', (values.name));
+      // formData.append('email', (values.email));
+      // formData.append('linkedinUrl', (values.linkedinUrl));
+      // formData.append('skills', (values.skills));
+      // formData.append('experience', (values.experience));
+
+      // if (resumeFile) {
+      //   console.log("resumeFile", resumeFile);
+      //   formData.append('resume', resumeFile);
+      // }
+
+      // console.log("formData: ", formData);
+
+      // const response = await fetch('/api/submit-application', {
+      //   method: 'POST',
+      //   // body: formData,
+      //   body: ""
+      // });
+
+      // console.log("response", response);
+
+      // if (!response.ok) {
+      //   throw new Error('Failed to submit application');
+      // }
+
+      // const data = await response.json();
+
+      // console.log("data: ", data);
+
+
+      // // Handle success
+      // console.log('Application submitted successfully');
+
+      // // Step 2: Redirect Immediately
+      // // Show Processing Screen
+      // router.push(`/profile/${data.data.id}`); 
 
     } catch (error) {
       console.error('Error submitting application:', error);
@@ -133,6 +227,47 @@ export default function CandidateForm() {
       setIsSubmitting(false);
     }
   }
+
+  if(queryResult) {
+      const markdownText = `
+        ${queryResult}
+      `
+
+    return (
+      <div className="max-w-3xl max-auto overflow-x-scroll">
+      <ReactMarkdown
+            // components={{
+            //   code({  inline, className, children, ...props }) {
+            //     const match = /language-(\w+)/.exec(className || "");
+            //     return !inline && match ? (
+            //       <SyntaxHighlighter style={oneDark} language={match[1]} PreTag="div" {...props}>
+            //         {String(children).replace(/\n$/, "")}
+            //       </SyntaxHighlighter>
+            //     ) : (
+            //       <code className={className} {...props}>
+            //         {children}
+            //       </code>
+            //     );
+            //   },
+            // }}
+      >
+        {markdownText}
+      </ReactMarkdown>
+      </div>
+    )
+
+  }
+
+
+    if(status) {
+      return (
+        <>
+          <LoadingEvaluation status={status as string} />
+        </>
+      )
+    }
+
+
 
   return (
     <Card className="p-4 sm:p-6 md:p-8">

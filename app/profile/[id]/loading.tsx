@@ -1,11 +1,11 @@
 "use client"
-import LoadingEvaluation from '@/components/LoadingEvaluation'
+
 import React from 'react'
 
 const LoadingProfile = () => {
   return (
     <div>
-        <LoadingEvaluation />
+        <h1>Loading...</h1>
     </div>
   )
 }
