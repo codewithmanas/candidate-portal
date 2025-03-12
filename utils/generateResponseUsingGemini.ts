@@ -96,16 +96,21 @@ export async function generateResponseUsingGemini(contextText: string) {
     Profile Context: ${contextText}
     `;
 
-    const result = await model.generateContent({
-      contents: [{
-        role: "user",
-        parts: [
-          { text: `${prompt}` }
-        ],
-      }],
-    });
-
-    return result;
+try {
+      const result = await model.generateContent({
+        contents: [{
+          role: "user",
+          parts: [
+            { text: `${prompt}` }
+          ],
+        }],
+      });
+  
+      return result;
+  } catch (error) {
+    console.log("error: ", error);
+    return null;
+  }
   }
 
 

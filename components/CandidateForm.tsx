@@ -154,6 +154,10 @@ export default function CandidateForm() {
 
           const embeddingsResult = await generateEmbeddings(resumeFile, storeDataResult[0].id);
 
+          if(!embeddingsResult) {
+            throw new Error("Failed to generate embeddings");
+          }
+
 
           if(embeddingsResult) {
                 // Step 2: Redirect Immediately
@@ -170,18 +174,6 @@ export default function CandidateForm() {
               setQueryResult(embeddingsResult);
 
           }
-
-
-
-
-
-
-
-
-
-
-
-
 
       // const formData = new FormData();
       // formData.append('name', (values.name));

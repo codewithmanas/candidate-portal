@@ -28,6 +28,10 @@ try {
                     
                         // Generate Embeddings
                         const embeddings =  await generateEmbeddingUsingGemini(chunks);
+                        
+                        if(!embeddings) {
+                          throw new Error("Error generating embeddings using gemini");
+                        }
                     
                     
                         // Store to Pinecone Vector Store
@@ -64,6 +68,10 @@ try {
 
 
                         const generatedResponse = await generateResponseUsingGemini(contextText as string);
+
+                        if (!generatedResponse) {
+                          throw new Error("Error generating response using gemini");
+                        }
 
                         return generatedResponse.response.text();
 
